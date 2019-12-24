@@ -4,6 +4,7 @@
   "private": true,
   "devDependencies": {
     "electron": "^1.7.9",
+    "find-process": "^1.4.3",
     "foreman": "^2.0.0",
     "react-scripts": "0.8.5"
   },
