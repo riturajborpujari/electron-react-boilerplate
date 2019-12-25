@@ -14,3 +14,4 @@ Thanks to [vicentedealencar](https://github.com/vicentedealencar) for an example
 ### Note
 
 **Always** close the electron app by pressing *Ctrl* + *C* to avoid letting react app running in background
+**Run** *./node_modules/.bin/electron-rebuild* for re-building sqlite3 to work with Electron
