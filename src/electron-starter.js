@@ -4,6 +4,8 @@ const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 
+const {ipcMain} = electron;
+
 const path = require('path');
 const url = require('url');
 
@@ -58,3 +60,24 @@ app.on('activate', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+ipcMain.on('synchronous-message', (event, data) => {
+    if(data === 'GET')
+        event.returnValue = 'Data communication is ON!!!'
+})
+
+ipcMain.on('asynchronous-message', (event, data) => {
+    data = JSON.parse(data)
+
+    console.log('Asynchronous message received')
+    console.log(data)
+    let reply = {
+        profile: {
+            name: 'Rituraj Borpujari',
+            profession: 'Software Architect'
+        },
+        request: data
+    }
+
+    event.sender.send('asynchronous-reply', JSON.stringify(reply))
+})
