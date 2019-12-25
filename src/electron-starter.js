@@ -1,4 +1,6 @@
 const electron = require('electron');
+const sqlite = require('sqlite3');
+
 // Module to control application life.
 const app = electron.app;
 // Module to create native browser window.
@@ -12,6 +14,28 @@ const url = require('url');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
+let dbInitialized = false
+console.log('CREATING DATABASE...')
+let db = new sqlite.Database(path.join(__dirname, './database.bin'), err => {
+    if(err){
+        console.error('Error while opening database...')
+        console.error(err)
+    }
+    else{
+        // dbInitialized = true
+        console.log('CREATING TABLE')
+        db.run('CREATE TABLE logs(id INTEGER AUTO_INCREMENT PRIMARY KEY, message VARCHAR(30));', err=> {
+            if(err){
+                console.error('Error while creating table inside database')
+                console.error(err)
+            }
+            else{
+                dbInitialized = true
+                console.log('DATABASE INITIALIZED!')
+            }
+        })
+    }
+})
 
 function createWindow() {
     // Create the browser window.
@@ -64,10 +88,26 @@ app.on('activate', function () {
 ipcMain.on('synchronous-message', (event, data) => {
     if(data === 'GET')
         event.returnValue = 'Data communication is ON!!!'
+    
+    
 })
 
 ipcMain.on('asynchronous-message', (event, data) => {
     data = JSON.parse(data)
+
+    if(dbInitialized){
+        console.log('INSERTING data into database...')
+        db.run('INSERT INTO logs(message) VALUES(?)', data.method, (err) => {
+            if(err){
+                console.error('Error inserting data into table')
+                console.error(err)
+            }
+            else{
+                console.log('Data SUCCESSFULLY Inserted!')
+            }
+            
+        })
+    }
 
     console.log('Asynchronous message received')
     console.log(data)
